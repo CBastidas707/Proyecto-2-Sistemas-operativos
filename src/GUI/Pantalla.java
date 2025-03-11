@@ -69,12 +69,12 @@ public class Pantalla extends javax.swing.JFrame {
         jScrollPane1.setViewportView(SDtable);
 
         jPanel1.add(jScrollPane1);
-        jScrollPane1.setBounds(50, 280, 440, 140);
+        jScrollPane1.setBounds(30, 320, 440, 140);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Estado del SD");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(60, 240, 130, 25);
+        jLabel1.setBounds(30, 280, 130, 25);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
