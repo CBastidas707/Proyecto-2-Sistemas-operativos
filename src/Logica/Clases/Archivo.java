@@ -15,13 +15,71 @@ public class Archivo {
     private int longitud;
     private int posicioni;
     private int posicionj;
+    private String contenido;
 
-    public Archivo(String nombre, int id, int longitud, int posicioni, int posicionj) {
+    public Archivo(String nombre, int id, int longitud, int posicioni, int posicionj, String contenido) {
         this.nombre = nombre;
         this.id = id;
         this.longitud = longitud;
         this.posicioni = posicioni;
         this.posicionj = posicionj;
+        this.contenido = contenido;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(int longitud) {
+        this.longitud = longitud;
+    }
+
+    public int getPosicioni() {
+        return posicioni;
+    }
+
+    public void setPosicioni(int posicioni) {
+        this.posicioni = posicioni;
+    }
+
+    public int getPosicionj() {
+        return posicionj;
+    }
+
+    public void setPosicionj(int posicionj) {
+        this.posicionj = posicionj;
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+    
+    
+    
+    
+     @Override
+    public String toString() {
+        return nombre; // Devuelve solo el nombre para mostrar en el JTree (lo que hace en realidad es que cada vez que el objeto es referenciado como una cadena, retorne esto)
     }
     
     

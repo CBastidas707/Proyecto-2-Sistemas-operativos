@@ -5,6 +5,11 @@
 package GUI;
 
 import javax.swing.JOptionPane;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import Logica.Estructuras.Lista;
+import Logica.Estructuras.Nodo;
+import Logica.Clases.Archivo;
 
 /**
  *
@@ -12,12 +17,27 @@ import javax.swing.JOptionPane;
  */
 public class Pantalla extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Pantalla
-     */
+    
+    private Lista<Archivo> listaArchivos;
+    private DefaultMutableTreeNode raiz;
+    private int idSiguiente;
+    
+    
     public Pantalla() {
         initComponents();
+        
+        raiz = new DefaultMutableTreeNode("Raíz");
+        treeDirectorio = new DefaultTreeModel(raiz);
+        jTree1.setModel(treeDirectorio);
+        this.listaArchivos = new Lista<Archivo>("Archivos");
+        idSiguiente = 0;
     }
+    
+    DefaultTreeModel treeDirectorio;
+    
+    
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -32,6 +52,10 @@ public class Pantalla extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         SDtable = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
+        btnCrearArchivo = new javax.swing.JButton();
+        btnCrearCarpeta = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -76,6 +100,34 @@ public class Pantalla extends javax.swing.JFrame {
         jPanel1.add(jLabel1);
         jLabel1.setBounds(30, 280, 130, 25);
 
+        jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTree1MouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(jTree1);
+
+        jPanel1.add(jScrollPane2);
+        jScrollPane2.setBounds(30, 50, 440, 210);
+
+        btnCrearArchivo.setText("Crear archivo");
+        btnCrearArchivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearArchivoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnCrearArchivo);
+        btnCrearArchivo.setBounds(540, 230, 140, 27);
+
+        btnCrearCarpeta.setText("Crear carpeta");
+        btnCrearCarpeta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCrearCarpetaActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnCrearCarpeta);
+        btnCrearCarpeta.setBounds(710, 230, 140, 27);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,14 +157,110 @@ public class Pantalla extends javax.swing.JFrame {
 
     }//GEN-LAST:event_SDtableMouseClicked
 
+    private void jTree1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseClicked
+        
+        if (evt.getClickCount() == 2) { // Verifica si es doble clic
+        DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+        
+        if (nodoSeleccionado != null && nodoSeleccionado.getUserObject() != null && nodoSeleccionado.getChildCount() == 0) {
+            Object userObject = nodoSeleccionado.getUserObject();
+            if (userObject instanceof Archivo) { // Verifica si el objeto es de tipo Archivo
+                Archivo archivo = (Archivo) userObject;
+                String contenido = archivo.getContenido(); // Obtiene el contenido del archivo
+                String texto = "Contenido del archivo: " + contenido;
+                JOptionPane.showMessageDialog(this, texto);
+            } else {
+                JOptionPane.showMessageDialog(this, "El nodo no contiene un archivo válido o es una carpeta");
+            }
+        }
+    }
+        
+    }//GEN-LAST:event_jTree1MouseClicked
+
+    private void btnCrearArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearArchivoActionPerformed
+        
+        DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+        
+        if(nodoSeleccionado == null){
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una carpeta");
+        }
+        
+        if(!(nodoSeleccionado.getUserObject() instanceof Archivo)){
+            
+            String nombre = JOptionPane.showInputDialog("Nombre del archivo:");
+        if (nombre != null && !nombre.isEmpty()) {
+            String contenido = JOptionPane.showInputDialog("Contenido del archivo:"); // O cualquier otro dato
+            
+            if (contenido != null && !contenido.isEmpty()){
+                String strLongitud = JOptionPane.showInputDialog("Longitud del archivo (en bloques):");
+                int longitud = Integer.parseInt(strLongitud);
+                
+                if (longitud > 0) {
+                    
+                Archivo archivo = new Archivo(nombre, idSiguiente, longitud, 0, 0, contenido); // Crea una instancia de Archivo
+                DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode(archivo); // Almacena el objeto en el nodo
+                
+                    if (nodoSeleccionado == null) {
+                        treeDirectorio.insertNodeInto(nuevoNodo, (DefaultMutableTreeNode) treeDirectorio.getRoot(), treeDirectorio.getChildCount(treeDirectorio.getRoot()));
+                    } else {
+                        treeDirectorio.insertNodeInto(nuevoNodo, nodoSeleccionado, treeDirectorio.getChildCount(nodoSeleccionado));}
+            }
+            }
+        }
+        
+        
+        } else{
+            
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una carpeta");
+        }
+        
+        
+        
+    }//GEN-LAST:event_btnCrearArchivoActionPerformed
+
+    private void btnCrearCarpetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearCarpetaActionPerformed
+        
+        DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+        
+        if(nodoSeleccionado == null){
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una carpeta");
+        }
+        
+        if(!(nodoSeleccionado.getUserObject() instanceof Archivo)){
+        
+        String nombre = JOptionPane.showInputDialog("Nombre de la carpeta:");
+        if (nombre != null && !nombre.isEmpty()) {
+            DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode(nombre);
+            if (nodoSeleccionado == null) {
+                // Si no hay nodo seleccionado, agrega a la raíz
+                treeDirectorio.insertNodeInto(nuevoNodo, (DefaultMutableTreeNode) treeDirectorio.getRoot(), treeDirectorio.getChildCount(treeDirectorio.getRoot()));
+            } else {
+                // Si hay nodo seleccionado, agrega como hijo
+                treeDirectorio.insertNodeInto(nuevoNodo, nodoSeleccionado, treeDirectorio.getChildCount(nodoSeleccionado));
+            }
+        }
+        
+        }else{
+            
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una carpeta");
+        }
+        
+        
+        
+    }//GEN-LAST:event_btnCrearCarpetaActionPerformed
+
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable SDtable;
+    private javax.swing.JButton btnCrearArchivo;
+    private javax.swing.JButton btnCrearCarpeta;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTree jTree1;
     // End of variables declaration//GEN-END:variables
 }
