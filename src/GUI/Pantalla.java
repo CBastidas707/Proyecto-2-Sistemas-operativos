@@ -8,8 +8,13 @@ import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import Logica.Estructuras.Lista;
-import Logica.Estructuras.Nodo;
 import Logica.Clases.Archivo;
+import java.awt.Color;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
@@ -63,14 +68,14 @@ public class Pantalla extends javax.swing.JFrame {
 
         SDtable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
+                {"1", "2", "3", "4", "5", "6", "7", "8"},
+                {"9", "10", "11", "12", "13", "14", "15", "16"},
+                {"17", "18", "19", "20", "21", "22", "23", "24"},
+                {"25", "26", "27", "28", "29", "30", "31", "32"},
+                {"33", "34", "35", "36", "37", "38", "39", "40"},
+                {"41", "42", "43", "44", "45", "46", "47", "48"},
+                {"49", "50", "51", "52", "53", "54", "55", "56"},
+                {"57", "58", "59", "60", "61", "62", "63", "64"}
             },
             new String [] {
                 "", "", "", "", "", "", "", ""
@@ -117,7 +122,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearArchivo);
-        btnCrearArchivo.setBounds(540, 230, 140, 27);
+        btnCrearArchivo.setBounds(540, 50, 140, 27);
 
         btnCrearCarpeta.setText("Crear carpeta");
         btnCrearCarpeta.addActionListener(new java.awt.event.ActionListener() {
@@ -126,7 +131,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearCarpeta);
-        btnCrearCarpeta.setBounds(710, 230, 140, 27);
+        btnCrearCarpeta.setBounds(540, 90, 140, 27);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -142,12 +147,60 @@ public class Pantalla extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+
+    public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
+
+    private List<CeldaInfo> celdasColoreadas = new ArrayList<>();
+
+    public void setColorCelda(int fila, int columna, Color color) {
+        celdasColoreadas.add(new CeldaInfo(fila, columna, color));
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+        c.setBackground(table.getBackground()); // Color predeterminado
+
+        for (CeldaInfo celda : celdasColoreadas) {
+            if (celda.fila == row && celda.columna == column) {
+                c.setBackground(celda.color);
+                break;
+            }
+        }
+
+        return c;
+    }
+
+    public static class CeldaInfo {
+        public int fila;
+        public int columna;
+        public Color color;
+
+        public CeldaInfo(int fila, int columna, Color color) {
+            this.fila = fila;
+            this.columna = columna;
+            this.color = color;
+        }
+    }
+}
+    
+    private CeldaColorEspecificoRenderer renderer = new CeldaColorEspecificoRenderer(); // Instancia del renderizador
+
+    public void cambiarColorCelda(int fila, int columna, Color color) {
+        renderer.setColorCelda(fila, columna, color);
+        SDtable.getColumnModel().getColumn(columna).setCellRenderer(renderer);
+        SDtable.repaint();
+    }
+    
+    
+    
     private void SDtableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SDtableMouseClicked
 
         int fila = SDtable.getSelectedRow();
         int columna = SDtable.getSelectedColumn();
 
         if (fila != -1 && columna != -1) {
+            cambiarColorCelda(fila, columna, Color.YELLOW);
             String valorActual = (String) SDtable.getValueAt(fila, columna);
             String nuevoValor = JOptionPane.showInputDialog("Ingrese el nuevo valor:", valorActual);
             if (nuevoValor != null) {
@@ -157,6 +210,9 @@ public class Pantalla extends javax.swing.JFrame {
 
     }//GEN-LAST:event_SDtableMouseClicked
 
+    
+    
+    
     private void jTree1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseClicked
         
         if (evt.getClickCount() == 2) { // Verifica si es doble clic
