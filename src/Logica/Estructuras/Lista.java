@@ -83,6 +83,7 @@ public class Lista <T>{
         }
         iN++;
     }
+    
     public String travel (){
         Nodo <T> pAux; 
         String result="";
@@ -125,4 +126,34 @@ public class Lista <T>{
             return pAux;
         }
     }
+    
+    public void deleteByIndex(int index) {
+        // Verificar que el índice sea válido
+        if (index < 0 || index >= iN) {
+            throw new IndexOutOfBoundsException("Índice fuera de rango.");
+        }
+
+        // Si el nodo a eliminar es el primero
+        if (index == 0) {
+            pFirst = pFirst.getpNext(); // Actualizamos el inicio de la lista
+        } else {
+            Nodo<T> current = pFirst;
+            Nodo<T> previous = null;
+
+            // Recorremos la lista hasta llegar al índice
+            for (int i = 0; i < index; i++) {
+                previous = current;
+                current = current.getpNext();
+            }
+
+            // Actualizar el puntero del nodo anterior para saltar el nodo actual
+            if (previous != null) {
+                previous.setpNext(current.getpNext());
+            }
+        }
+
+        // Reducir el tamaño de la lista
+        iN--;
+    }
+
 }
