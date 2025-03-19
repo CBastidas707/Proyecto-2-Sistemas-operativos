@@ -12,9 +12,11 @@ import Logica.Clases.Archivo;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.tree.TreeNode;
 
 /**
  *
@@ -28,14 +30,14 @@ public class Pantalla extends javax.swing.JFrame {
     private int idSiguiente;
     
     
-    public Pantalla() {
+    public Pantalla(Lista<Archivo> listaArchivos) {
         initComponents();
         
         raiz = new DefaultMutableTreeNode("Raíz");
         treeDirectorio = new DefaultTreeModel(raiz);
         jTree1.setModel(treeDirectorio);
-        this.listaArchivos = new Lista<Archivo>("Archivos");
-        idSiguiente = 0;
+        this.listaArchivos = listaArchivos;
+        idSiguiente = obtenerIdMasGrande() + 1;
     }
     
     DefaultTreeModel treeDirectorio;
@@ -61,6 +63,8 @@ public class Pantalla extends javax.swing.JFrame {
         jTree1 = new javax.swing.JTree();
         btnCrearArchivo = new javax.swing.JButton();
         btnCrearCarpeta = new javax.swing.JButton();
+        btnEliminarCarpeta = new javax.swing.JButton();
+        btnEliminarArchivo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -133,6 +137,24 @@ public class Pantalla extends javax.swing.JFrame {
         jPanel1.add(btnCrearCarpeta);
         btnCrearCarpeta.setBounds(540, 90, 140, 27);
 
+        btnEliminarCarpeta.setText("Eliminar carpeta");
+        btnEliminarCarpeta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarCarpetaActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnEliminarCarpeta);
+        btnEliminarCarpeta.setBounds(800, 230, 140, 27);
+
+        btnEliminarArchivo.setText("Eliminar archivo");
+        btnEliminarArchivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarArchivoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnEliminarArchivo);
+        btnEliminarArchivo.setBounds(800, 190, 140, 27);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -198,6 +220,8 @@ public class Pantalla extends javax.swing.JFrame {
 
         int fila = SDtable.getSelectedRow();
         int columna = SDtable.getSelectedColumn();
+        
+        System.out.println(" Fila: " + fila + " Columna: " + columna);
 
         if (fila != -1 && columna != -1) {
             cambiarColorCelda(fila, columna, Color.YELLOW);
@@ -233,6 +257,34 @@ public class Pantalla extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jTree1MouseClicked
 
+    
+    private int asignarID(){
+        
+        int id = 0;
+        id = id + idSiguiente;
+        return id;
+        
+    }
+    
+    
+    public int obtenerIdMasGrande() {
+    if (this.listaArchivos.size() == 0) {
+        
+        System.out.println("La lista está vacía");
+        return 0;
+    }
+
+    int idMasGrande = this.listaArchivos.get(0).getId(); // Inicializa con el primer ID
+    for (int i = 1; i < this.listaArchivos.size(); i++) {
+        int idActual = this.listaArchivos.get(i).getId();
+        if (idActual > idMasGrande) {
+            idMasGrande = idActual;
+        }
+    }
+    return idMasGrande;
+}
+    
+    
     private void btnCrearArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearArchivoActionPerformed
         
         DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
@@ -253,8 +305,12 @@ public class Pantalla extends javax.swing.JFrame {
                 
                 if (longitud > 0) {
                     
-                Archivo archivo = new Archivo(nombre, idSiguiente, longitud, 0, 0, contenido); // Crea una instancia de Archivo
+                Archivo archivo = new Archivo(nombre, asignarID(), longitud, 0, 0, contenido); // Crea una instancia de Archivo
+                
+                this.idSiguiente++;
+                
                 DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode(archivo); // Almacena el objeto en el nodo
+                listaArchivos.append(archivo);
                 
                     if (nodoSeleccionado == null) {
                         treeDirectorio.insertNodeInto(nuevoNodo, (DefaultMutableTreeNode) treeDirectorio.getRoot(), treeDirectorio.getChildCount(treeDirectorio.getRoot()));
@@ -264,14 +320,11 @@ public class Pantalla extends javax.swing.JFrame {
             }
         }
         
-        
         } else{
             
             JOptionPane.showMessageDialog(this, "Debe seleccionar una carpeta");
         }
-        
-        
-        
+         
     }//GEN-LAST:event_btnCrearArchivoActionPerformed
 
     private void btnCrearCarpetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearCarpetaActionPerformed
@@ -305,6 +358,96 @@ public class Pantalla extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnCrearCarpetaActionPerformed
 
+    private void btnEliminarCarpetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCarpetaActionPerformed
+        
+        DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+
+        if (nodoSeleccionado == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar la carpeta a borrar");
+            return;
+        }
+
+        if (!(nodoSeleccionado.getUserObject() instanceof Archivo)) {
+            int opcion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea borrar la carpeta \"" + nodoSeleccionado.getUserObject() + "\" y todo su contenido?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                DefaultMutableTreeNode padre = (DefaultMutableTreeNode) nodoSeleccionado.getParent();
+                if (padre != null) {
+                    // Borrar los archivos asociados a esta carpeta
+                    borrarArchivosDeCarpeta(nodoSeleccionado);
+
+                    // Borrar el nodo del árbol
+                    treeDirectorio.removeNodeFromParent(nodoSeleccionado);
+                    treeDirectorio.reload(padre); // Recarga el nodo padre para actualizar la vista
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se puede borrar la raíz del árbol.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Solo puede borrar carpetas.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_btnEliminarCarpetaActionPerformed
+
+    private void btnEliminarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarArchivoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEliminarArchivoActionPerformed
+
+    
+    private void borrarArchivosDeCarpeta(DefaultMutableTreeNode carpetaNodo) {
+    if (carpetaNodo instanceof DefaultMutableTreeNode) {
+        Enumeration<TreeNode> hijos = carpetaNodo.children(); // Cambiado a Enumeration<TreeNode>
+        while (hijos.hasMoreElements()) {
+            TreeNode hijo = hijos.nextElement(); // Cambiado a TreeNode
+            if (hijo instanceof DefaultMutableTreeNode) { // Verifica si es DefaultMutableTreeNode
+                DefaultMutableTreeNode defaultHijo = (DefaultMutableTreeNode) hijo; // Casting seguro
+                Object userObject = defaultHijo.getUserObject();
+                if (userObject instanceof Archivo) {
+                    Archivo archivo = (Archivo) userObject;
+                    borrarArchivo(archivo.getId());
+                } else {
+                    borrarArchivosDeCarpeta(defaultHijo); // Llama recursivamente con DefaultMutableTreeNode
+                }
+            }
+        }
+    } else {
+        System.err.println("Error: carpetaNodo no es DefaultMutableTreeNode");
+        JOptionPane.showMessageDialog(this, "Error al borrar la carpeta.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    public Lista<Archivo> filtrarArchivos(int id_filtro) {
+        Lista<Archivo> lista_filtrada = new Lista<>("Filtrada");
+        for (int i = 0; i < this.listaArchivos.size(); i++) {
+            Archivo archivo = this.listaArchivos.get(i);
+            if (archivo.getId() == id_filtro) {
+                lista_filtrada.append(archivo);
+            }
+        }
+        return lista_filtrada;
+    }
+
+    public void borrarArchivo(int idArchivo) {
+
+    boolean existe = false;
+
+    for (int i = listaArchivos.size() - 1; i >= 0; i--) { // Recorre en orden inverso
+        Archivo archivo = listaArchivos.get(i);
+        if (archivo.getId() == idArchivo) {
+            listaArchivos.deleteByIndex(i);
+            existe = true;
+            System.out.println(archivo.getNombre() + " eliminado");
+        }
+    }
+
+    if (!existe) {
+        System.out.println("No existe");
+    }
+}
+
+    
+    
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -313,6 +456,8 @@ public class Pantalla extends javax.swing.JFrame {
     private javax.swing.JTable SDtable;
     private javax.swing.JButton btnCrearArchivo;
     private javax.swing.JButton btnCrearCarpeta;
+    private javax.swing.JButton btnEliminarArchivo;
+    private javax.swing.JButton btnEliminarCarpeta;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
