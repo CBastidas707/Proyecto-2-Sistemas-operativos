@@ -63,8 +63,9 @@ public class Pantalla extends javax.swing.JFrame {
         jTree1 = new javax.swing.JTree();
         btnCrearArchivo = new javax.swing.JButton();
         btnCrearCarpeta = new javax.swing.JButton();
-        btnEliminarCarpeta = new javax.swing.JButton();
-        btnEliminarArchivo = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
+        btnModificarContenido = new javax.swing.JButton();
+        btnModificarNombre = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -119,6 +120,7 @@ public class Pantalla extends javax.swing.JFrame {
         jPanel1.add(jScrollPane2);
         jScrollPane2.setBounds(30, 50, 440, 210);
 
+        btnCrearArchivo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearArchivo.setText("Crear archivo");
         btnCrearArchivo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,8 +128,9 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearArchivo);
-        btnCrearArchivo.setBounds(540, 50, 140, 27);
+        btnCrearArchivo.setBounds(520, 130, 190, 50);
 
+        btnCrearCarpeta.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearCarpeta.setText("Crear carpeta");
         btnCrearCarpeta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -135,25 +138,37 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearCarpeta);
-        btnCrearCarpeta.setBounds(540, 90, 140, 27);
+        btnCrearCarpeta.setBounds(520, 60, 190, 50);
 
-        btnEliminarCarpeta.setText("Eliminar carpeta");
-        btnEliminarCarpeta.addActionListener(new java.awt.event.ActionListener() {
+        btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarCarpetaActionPerformed(evt);
+                btnEliminarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnEliminarCarpeta);
-        btnEliminarCarpeta.setBounds(800, 230, 140, 27);
+        jPanel1.add(btnEliminar);
+        btnEliminar.setBounds(520, 200, 190, 50);
 
-        btnEliminarArchivo.setText("Eliminar archivo");
-        btnEliminarArchivo.addActionListener(new java.awt.event.ActionListener() {
+        btnModificarContenido.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnModificarContenido.setText("Modificar contenido");
+        btnModificarContenido.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEliminarArchivoActionPerformed(evt);
+                btnModificarContenidoActionPerformed(evt);
             }
         });
-        jPanel1.add(btnEliminarArchivo);
-        btnEliminarArchivo.setBounds(800, 190, 140, 27);
+        jPanel1.add(btnModificarContenido);
+        btnModificarContenido.setBounds(760, 170, 190, 50);
+
+        btnModificarNombre.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnModificarNombre.setText("Modificar nombre");
+        btnModificarNombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModificarNombreActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnModificarNombre);
+        btnModificarNombre.setBounds(760, 100, 190, 50);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -270,7 +285,7 @@ public class Pantalla extends javax.swing.JFrame {
     public int obtenerIdMasGrande() {
     if (this.listaArchivos.size() == 0) {
         
-        System.out.println("La lista está vacía");
+        System.out.println("La lista esta vacia");
         return 0;
     }
 
@@ -358,7 +373,7 @@ public class Pantalla extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnCrearCarpetaActionPerformed
 
-    private void btnEliminarCarpetaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCarpetaActionPerformed
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         
         DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
 
@@ -368,6 +383,9 @@ public class Pantalla extends javax.swing.JFrame {
         }
 
         if (!(nodoSeleccionado.getUserObject() instanceof Archivo)) {
+            
+            // Lógica para borrar carpetas
+            
             int opcion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea borrar la carpeta \"" + nodoSeleccionado.getUserObject() + "\" y todo su contenido?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
             if (opcion == JOptionPane.YES_OPTION) {
                 DefaultMutableTreeNode padre = (DefaultMutableTreeNode) nodoSeleccionado.getParent();
@@ -382,15 +400,97 @@ public class Pantalla extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(this, "No se puede borrar la raíz del árbol.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Solo puede borrar carpetas.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         }
         
-    }//GEN-LAST:event_btnEliminarCarpetaActionPerformed
+        else {
+            
+        // Lógica para borrar archivos
+        int opcion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea borrar el archivo \"" + nodoSeleccionado.getUserObject() + "\"?", "Confirmar borrado", JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                Object userObject = nodoSeleccionado.getUserObject();
+                Archivo archivo = (Archivo) userObject;
 
-    private void btnEliminarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarArchivoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnEliminarArchivoActionPerformed
+                borrarArchivo(archivo.getId()); // Llama a tu método para borrar el archivo de la lista
+
+                DefaultMutableTreeNode padre = (DefaultMutableTreeNode) nodoSeleccionado.getParent(); //Obtiene el nodo padre
+                if (padre != null) {
+                    treeDirectorio.removeNodeFromParent(nodoSeleccionado);//Elimina el nodo del Jtree
+                    treeDirectorio.reload(padre); //Recarga el padre para actualizar la vista.
+                }
+                
+            }
+        }
+        
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnModificarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarNombreActionPerformed
+        
+        DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+
+        if (nodoSeleccionado == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un archivo o carpeta");
+            return;
+        }
+
+        if (nodoSeleccionado.getUserObject() instanceof Archivo) {
+            Archivo archivo = (Archivo) nodoSeleccionado.getUserObject();
+
+            String contenidoActual = archivo.getNombre();
+
+            String nuevoContenido = JOptionPane.showInputDialog(this, "Nuevo nombre:", contenidoActual);
+
+            if (nuevoContenido != null && !nuevoContenido.isEmpty()) {
+            
+                archivo.setNombre(nuevoContenido);
+                DefaultTreeModel modelo = (DefaultTreeModel) jTree1.getModel();
+                modelo.nodeChanged(nodoSeleccionado); // Notifica al modelo del cambio
+                
+                System.out.println("El archivo \"" + contenidoActual + "\" (ID: " + archivo.getId() + ") " + "ha sido renombrado a \"" + archivo.getNombre() + "\"" );
+            }
+            
+        } else {
+
+            String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", "Modificar Nombre", JOptionPane.QUESTION_MESSAGE);
+
+            if (nuevoNombre != null && !nuevoNombre.isEmpty()) {
+                nodoSeleccionado.setUserObject(nuevoNombre); // Cambia el nombre en el nodo
+                DefaultTreeModel modelo = (DefaultTreeModel) jTree1.getModel();
+                modelo.nodeChanged(nodoSeleccionado); // Notifica al modelo del cambio
+                
+                System.out.println("La carpeta ha sido renombrada a " + nuevoNombre);
+            }
+            
+        }
+        
+        
+    }//GEN-LAST:event_btnModificarNombreActionPerformed
+
+    private void btnModificarContenidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarContenidoActionPerformed
+        
+        DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
+
+        if (nodoSeleccionado == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un archivo a modificar");
+            return;
+        }
+
+        if (nodoSeleccionado.getUserObject() instanceof Archivo) {
+            Archivo archivo = (Archivo) nodoSeleccionado.getUserObject();
+
+            String contenidoActual = archivo.getContenido();
+
+            String nuevoContenido = JOptionPane.showInputDialog(this, "Ingrese el nuevo contenido:", contenidoActual);
+
+            if (nuevoContenido != null) {
+            
+                archivo.setContenido(nuevoContenido);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Solo puede modificar el contenido de archivos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        
+    }//GEN-LAST:event_btnModificarContenidoActionPerformed
 
     
     private void borrarArchivosDeCarpeta(DefaultMutableTreeNode carpetaNodo) {
@@ -435,7 +535,7 @@ public class Pantalla extends javax.swing.JFrame {
         if (archivo.getId() == idArchivo) {
             listaArchivos.deleteByIndex(i);
             existe = true;
-            System.out.println(archivo.getNombre() + " eliminado");
+            System.out.println("Archivo " + archivo.getNombre() + "(ID: " + archivo.getId() + ")" + " eliminado");
         }
     }
 
@@ -456,8 +556,9 @@ public class Pantalla extends javax.swing.JFrame {
     private javax.swing.JTable SDtable;
     private javax.swing.JButton btnCrearArchivo;
     private javax.swing.JButton btnCrearCarpeta;
-    private javax.swing.JButton btnEliminarArchivo;
-    private javax.swing.JButton btnEliminarCarpeta;
+    private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnModificarContenido;
+    private javax.swing.JButton btnModificarNombre;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
