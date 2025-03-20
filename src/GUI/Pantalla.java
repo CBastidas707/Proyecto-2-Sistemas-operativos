@@ -11,11 +11,14 @@ import Logica.Estructuras.Lista;
 import Logica.Clases.Archivo;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeNode;
 
 /**
@@ -38,6 +41,7 @@ public class Pantalla extends javax.swing.JFrame {
         jTree1.setModel(treeDirectorio);
         this.listaArchivos = listaArchivos;
         idSiguiente = obtenerIdMasGrande() + 1;
+        llenarTablaArchivos();
     }
     
     DefaultTreeModel treeDirectorio;
@@ -73,14 +77,14 @@ public class Pantalla extends javax.swing.JFrame {
 
         SDtable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"1", "2", "3", "4", "5", "6", "7", "8"},
-                {"9", "10", "11", "12", "13", "14", "15", "16"},
-                {"17", "18", "19", "20", "21", "22", "23", "24"},
-                {"25", "26", "27", "28", "29", "30", "31", "32"},
-                {"33", "34", "35", "36", "37", "38", "39", "40"},
-                {"41", "42", "43", "44", "45", "46", "47", "48"},
-                {"49", "50", "51", "52", "53", "54", "55", "56"},
-                {"57", "58", "59", "60", "61", "62", "63", "64"}
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""},
+                {"", "", "", "", "", "", "", ""}
             },
             new String [] {
                 "", "", "", "", "", "", "", ""
@@ -101,6 +105,16 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(SDtable);
+        if (SDtable.getColumnModel().getColumnCount() > 0) {
+            SDtable.getColumnModel().getColumn(0).setHeaderValue("");
+            SDtable.getColumnModel().getColumn(1).setHeaderValue("");
+            SDtable.getColumnModel().getColumn(2).setHeaderValue("");
+            SDtable.getColumnModel().getColumn(3).setHeaderValue("");
+            SDtable.getColumnModel().getColumn(4).setHeaderValue("");
+            SDtable.getColumnModel().getColumn(5).setHeaderValue("");
+            SDtable.getColumnModel().getColumn(6).setHeaderValue("");
+            SDtable.getColumnModel().getColumn(7).setHeaderValue("");
+        }
 
         jPanel1.add(jScrollPane1);
         jScrollPane1.setBounds(30, 320, 440, 140);
@@ -128,7 +142,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearArchivo);
-        btnCrearArchivo.setBounds(520, 130, 190, 50);
+        btnCrearArchivo.setBounds(510, 130, 190, 50);
 
         btnCrearCarpeta.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearCarpeta.setText("Crear carpeta");
@@ -138,7 +152,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearCarpeta);
-        btnCrearCarpeta.setBounds(520, 60, 190, 50);
+        btnCrearCarpeta.setBounds(510, 60, 190, 50);
 
         btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnEliminar.setText("Eliminar");
@@ -148,7 +162,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnEliminar);
-        btnEliminar.setBounds(520, 200, 190, 50);
+        btnEliminar.setBounds(510, 200, 190, 50);
 
         btnModificarContenido.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarContenido.setText("Modificar contenido");
@@ -158,7 +172,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarContenido);
-        btnModificarContenido.setBounds(760, 170, 190, 50);
+        btnModificarContenido.setBounds(740, 170, 190, 50);
 
         btnModificarNombre.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarNombre.setText("Modificar nombre");
@@ -168,7 +182,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarNombre);
-        btnModificarNombre.setBounds(760, 100, 190, 50);
+        btnModificarNombre.setBounds(740, 100, 190, 50);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -185,12 +199,23 @@ public class Pantalla extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
 
-    public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
+public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
 
     private List<CeldaInfo> celdasColoreadas = new ArrayList<>();
 
     public void setColorCelda(int fila, int columna, Color color) {
+        eliminarCelda(fila, columna);
         celdasColoreadas.add(new CeldaInfo(fila, columna, color));
+    }
+
+    private void eliminarCelda(int fila, int columna) {
+        for (int i = celdasColoreadas.size() - 1; i >= 0; i--) {
+            CeldaInfo celda = celdasColoreadas.get(i);
+            if (celda.fila == fila && celda.columna == columna) {
+                celdasColoreadas.remove(i);
+                break;
+            }
+        }
     }
 
     @Override
@@ -198,11 +223,19 @@ public class Pantalla extends javax.swing.JFrame {
         Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         c.setBackground(table.getBackground()); // Color predeterminado
 
+        boolean celdaColoreada = false;
         for (CeldaInfo celda : celdasColoreadas) {
             if (celda.fila == row && celda.columna == column) {
                 c.setBackground(celda.color);
+                celdaColoreada = true;
+                System.out.println("printprueba " + celda.fila + " " + celda.columna);
                 break;
             }
+        }
+
+        if (!celdaColoreada) {
+            c.setBackground(table.getBackground()); // Asegura el color predeterminado
+            ((JLabel) c).setText(""); // Establece el texto a vacío
         }
 
         return c;
@@ -230,6 +263,74 @@ public class Pantalla extends javax.swing.JFrame {
     }
     
     
+    public static Color obtenerColorPorNombre(String nombreColor) {
+    if (nombreColor == null || nombreColor.isEmpty()) {
+        return Color.BLACK; // Color por defecto si el nombre es nulo o vacío
+    }
+
+    switch (nombreColor.toLowerCase()) {
+        case "negro":
+            return Color.BLACK;
+        case "blanco":
+            return Color.WHITE;
+        case "rojo":
+            return Color.RED;
+        case "rojoclaro":
+            return new Color(255, 182, 193); // LightPink
+        case "rojooscuro":
+            return new Color(139, 0, 0); // DarkRed
+        case "verde":
+            return Color.GREEN;
+        case "verdeclaro":
+            return new Color(144, 238, 144); // LightGreen
+        case "verdeoscuro":
+            return new Color(0, 100, 0); // DarkGreen
+        case "azul":
+            return Color.BLUE;
+        case "azulclaro":
+            return new Color(173, 216, 230); // LightBlue
+        case "azuloscuro":
+            return new Color(0, 0, 139); // DarkBlue
+        case "amarillo":
+            return Color.YELLOW;
+        case "amarilloclaro":
+            return new Color(255, 255, 224); // LightYellow
+        case "amarillooscuro":
+            return new Color(255, 215, 0); // Gold
+        case "cyan":
+            return Color.CYAN;
+        case "cyanclaro":
+            return new Color(224, 255, 255); // LightCyan
+        case "cyanoscuro":
+            return new Color(0, 139, 139); // DarkCyan
+        case "magenta":
+            return Color.MAGENTA;
+        case "magentaclaro":
+            return new Color(238, 130, 238); // Violet
+        case "magentaoscuro":
+            return new Color(139, 0, 139); // DarkMagenta
+        case "grisoscuro":
+            return Color.DARK_GRAY;
+        case "gris":
+            return Color.GRAY;
+        case "grisclaro":
+            return Color.LIGHT_GRAY;
+        case "naranja":
+            return Color.ORANGE;
+        case "naranjaclaro":
+            return new Color(255, 228, 196); // Bisque
+        case "naranjaoscuro":
+            return new Color(255, 140, 0); // DarkOrange
+        case "rosa":
+            return Color.PINK;
+        case "rosaoscuro":
+            return new Color(219, 112, 147); // MediumVioletRed
+        default:
+            return Color.BLACK; // Color por defecto si no se encuentra el nombre
+    }
+}
+    
+    
     
     private void SDtableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SDtableMouseClicked
 
@@ -239,18 +340,80 @@ public class Pantalla extends javax.swing.JFrame {
         System.out.println(" Fila: " + fila + " Columna: " + columna);
 
         if (fila != -1 && columna != -1) {
-            cambiarColorCelda(fila, columna, Color.YELLOW);
+            int numeroCelda = fila * SDtable.getColumnCount() + columna;
             String valorActual = (String) SDtable.getValueAt(fila, columna);
-            String nuevoValor = JOptionPane.showInputDialog("Ingrese el nuevo valor:", valorActual);
-            if (nuevoValor != null) {
-                SDtable.setValueAt(nuevoValor, fila, columna);
+            
+            if(valorActual == null || valorActual.isEmpty()){
+                
+                JOptionPane.showMessageDialog(this, "Bloque " + numeroCelda + ". Libre");
+
+            }else{
+                
+                JOptionPane.showMessageDialog(this, "Bloque " + numeroCelda + ". " + valorActual);
+
             }
+            
+            
+//            if (nuevoValor != null) {
+//                SDtable.setValueAt(nuevoValor, fila, columna);
+//            }
         }
 
     }//GEN-LAST:event_SDtableMouseClicked
 
     
     
+    private void llenarTablaArchivos() {
+    DefaultTableModel modeloTabla = (DefaultTableModel) SDtable.getModel();
+
+    // Limpia la tabla antes de llenarla
+    modeloTabla.setRowCount(0);
+
+    // Asegura que la tabla tenga 8 filas y 8 columnas
+    modeloTabla.setRowCount(8);
+    modeloTabla.setColumnCount(8);
+
+    for (int i = 0; i < listaArchivos.size(); i++) {
+        Archivo archivo = listaArchivos.get(i);
+        modeloTabla.setValueAt(archivo.getNombre(), archivo.getPosicioni(), archivo.getPosicionj());
+        System.out.println("\n Nombre archivo " + archivo.getNombre());
+        
+        cambiarColorCelda(archivo.getPosicioni(), archivo.getPosicionj(), obtenerColorPorNombre(archivo.getColor()));
+
+    }
+}
+    
+    
+    private Point obtenerCeldaDisponibleMasCercana() {
+    DefaultTableModel modeloTabla = (DefaultTableModel) SDtable.getModel();
+
+    // Recorre la tabla buscando una celda vacía
+    for (int fila = 0; fila < 8; fila++) {
+        for (int columna = 0; columna < 8; columna++) {
+            if (modeloTabla.getValueAt(fila, columna) == null || modeloTabla.getValueAt(fila, columna).toString().isEmpty()) {
+                return new Point(fila, columna); // Devuelve las coordenadas de la celda vacía
+            }
+        }
+    }
+
+    System.out.println("No hay espacio disponible");
+    return null;
+    
+}
+  
+    
+    private int contarCeldasDisponibles() {
+    DefaultTableModel modeloTabla = (DefaultTableModel) SDtable.getModel();
+    int contador = 0;
+    for (int fila = 0; fila < 8; fila++) {
+        for (int columna = 0; columna < 8; columna++) {
+            if (modeloTabla.getValueAt(fila, columna) == null || modeloTabla.getValueAt(fila, columna).toString().isEmpty()) {
+                contador++;
+            }
+        }
+    }
+    return contador;
+}
     
     private void jTree1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree1MouseClicked
         
@@ -303,40 +466,62 @@ public class Pantalla extends javax.swing.JFrame {
     private void btnCrearArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearArchivoActionPerformed
         
         DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode) jTree1.getLastSelectedPathComponent();
-        
-        if(nodoSeleccionado == null){
+
+        if (nodoSeleccionado == null) {
             JOptionPane.showMessageDialog(this, "Debe seleccionar una carpeta");
+            return; // Salir del método si no hay carpeta seleccionada
         }
-        
-        if(!(nodoSeleccionado.getUserObject() instanceof Archivo)){
-            
+
+        if (!(nodoSeleccionado.getUserObject() instanceof Archivo)) {
             String nombre = JOptionPane.showInputDialog("Nombre del archivo:");
-        if (nombre != null && !nombre.isEmpty()) {
-            String contenido = JOptionPane.showInputDialog("Contenido del archivo:"); // O cualquier otro dato
-            
-            if (contenido != null && !contenido.isEmpty()){
-                String strLongitud = JOptionPane.showInputDialog("Longitud del archivo (en bloques):");
-                int longitud = Integer.parseInt(strLongitud);
-                
-                if (longitud > 0) {
-                    
-                Archivo archivo = new Archivo(nombre, asignarID(), longitud, 0, 0, contenido); // Crea una instancia de Archivo
-                
-                this.idSiguiente++;
-                
-                DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode(archivo); // Almacena el objeto en el nodo
-                listaArchivos.append(archivo);
-                
-                    if (nodoSeleccionado == null) {
-                        treeDirectorio.insertNodeInto(nuevoNodo, (DefaultMutableTreeNode) treeDirectorio.getRoot(), treeDirectorio.getChildCount(treeDirectorio.getRoot()));
-                    } else {
-                        treeDirectorio.insertNodeInto(nuevoNodo, nodoSeleccionado, treeDirectorio.getChildCount(nodoSeleccionado));}
+
+            if (nombre != null && !nombre.isEmpty()) {
+                String contenido = JOptionPane.showInputDialog("Contenido del archivo:");
+
+                if (contenido != null && !contenido.isEmpty()) {
+                    String strLongitud = JOptionPane.showInputDialog("Longitud del archivo (en bloques):");
+                    int longitud = Integer.parseInt(strLongitud);
+
+                    if (longitud > 0) {
+                        String color = JOptionPane.showInputDialog("Color del archivo:");
+
+                        if (color != null && !color.isEmpty()) {
+                            // Verificar si hay suficientes espacios disponibles
+                            if (contarCeldasDisponibles() < longitud) {
+                                JOptionPane.showMessageDialog(this, "No hay suficientes espacios disponibles para el archivo.");
+                                return; // Salir del método si no hay suficientes espacios
+                            }
+
+                            // Agregar archivos en diferentes posiciones
+                            boolean verTree = true; // Esto es un indicador para que solo se agregue al Jtree una vez
+                            
+                            for (int i = 0; i < longitud; i++) {
+                                Point celdaDisponible = obtenerCeldaDisponibleMasCercana();
+                                if (celdaDisponible != null) {
+                                    Archivo archivo = new Archivo(nombre, asignarID(), longitud, celdaDisponible.x, celdaDisponible.y, contenido, color);
+                                    listaArchivos.append(archivo);
+                                    llenarTablaArchivos();
+                                    
+                                    if(verTree){
+                                        DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode(archivo);
+                                        if (nodoSeleccionado == null) {
+                                            treeDirectorio.insertNodeInto(nuevoNodo, (DefaultMutableTreeNode) treeDirectorio.getRoot(), treeDirectorio.getChildCount(treeDirectorio.getRoot()));
+                                        } else {
+                                            treeDirectorio.insertNodeInto(nuevoNodo, nodoSeleccionado, treeDirectorio.getChildCount(nodoSeleccionado));
+                                        }
+                                    }
+                                    
+                                    verTree = false;
+                                    
+                                }
+                            }
+                            this.idSiguiente++;
+                  
+                        }
+                    }
+                }
             }
-            }
-        }
-        
-        } else{
-            
+        } else {
             JOptionPane.showMessageDialog(this, "Debe seleccionar una carpeta");
         }
          
@@ -396,6 +581,8 @@ public class Pantalla extends javax.swing.JFrame {
                     // Borrar el nodo del árbol
                     treeDirectorio.removeNodeFromParent(nodoSeleccionado);
                     treeDirectorio.reload(padre); // Recarga el nodo padre para actualizar la vista
+                    
+                    llenarTablaArchivos();
                 } else {
                     JOptionPane.showMessageDialog(this, "No se puede borrar la raíz del árbol.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -410,13 +597,15 @@ public class Pantalla extends javax.swing.JFrame {
                 Object userObject = nodoSeleccionado.getUserObject();
                 Archivo archivo = (Archivo) userObject;
 
-                borrarArchivo(archivo.getId()); // Llama a tu método para borrar el archivo de la lista
+                borrarArchivo(archivo.getId());
 
-                DefaultMutableTreeNode padre = (DefaultMutableTreeNode) nodoSeleccionado.getParent(); //Obtiene el nodo padre
+                DefaultMutableTreeNode padre = (DefaultMutableTreeNode) nodoSeleccionado.getParent();
                 if (padre != null) {
                     treeDirectorio.removeNodeFromParent(nodoSeleccionado);//Elimina el nodo del Jtree
-                    treeDirectorio.reload(padre); //Recarga el padre para actualizar la vista.
+                    treeDirectorio.reload(padre); //Recarga el padre para actualizar la vista
                 }
+                
+                llenarTablaArchivos();
                 
             }
         }
@@ -441,11 +630,18 @@ public class Pantalla extends javax.swing.JFrame {
 
             if (nuevoContenido != null && !nuevoContenido.isEmpty()) {
             
-                archivo.setNombre(nuevoContenido);
+                Lista<Archivo> listaAuxiliar = filtrarArchivos(archivo.getId());
+                
+                for (int i = listaAuxiliar.size() - 1; i >= 0; i--) { // Recorre en orden inverso
+                    Archivo archivoAuxiliar = listaAuxiliar.get(i);
+                    archivoAuxiliar.setNombre(nuevoContenido);
+                }
                 DefaultTreeModel modelo = (DefaultTreeModel) jTree1.getModel();
                 modelo.nodeChanged(nodoSeleccionado); // Notifica al modelo del cambio
                 
                 System.out.println("El archivo \"" + contenidoActual + "\" (ID: " + archivo.getId() + ") " + "ha sido renombrado a \"" + archivo.getNombre() + "\"" );
+                
+                llenarTablaArchivos();
             }
             
         } else {
@@ -483,7 +679,14 @@ public class Pantalla extends javax.swing.JFrame {
 
             if (nuevoContenido != null) {
             
-                archivo.setContenido(nuevoContenido);
+                Lista<Archivo> listaAuxiliar = filtrarArchivos(archivo.getId());
+                
+                for (int i = listaAuxiliar.size() - 1; i >= 0; i--) { // Recorre en orden inverso
+                    Archivo archivoAuxiliar = listaAuxiliar.get(i);
+                    archivo.setContenido(nuevoContenido);
+
+                }
+                llenarTablaArchivos();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Solo puede modificar el contenido de archivos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -533,6 +736,7 @@ public class Pantalla extends javax.swing.JFrame {
     for (int i = listaArchivos.size() - 1; i >= 0; i--) { // Recorre en orden inverso
         Archivo archivo = listaArchivos.get(i);
         if (archivo.getId() == idArchivo) {
+            renderer.eliminarCelda(archivo.getPosicioni(), archivo.getPosicionj());
             listaArchivos.deleteByIndex(i);
             existe = true;
             System.out.println("Archivo " + archivo.getNombre() + "(ID: " + archivo.getId() + ")" + " eliminado");

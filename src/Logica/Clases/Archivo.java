@@ -16,14 +16,16 @@ public class Archivo {
     private int posicioni;
     private int posicionj;
     private String contenido;
+    private String color;
 
-    public Archivo(String nombre, int id, int longitud, int posicioni, int posicionj, String contenido) {
+    public Archivo(String nombre, int id, int longitud, int posicioni, int posicionj, String contenido, String color) {
         this.nombre = nombre;
         this.id = id;
         this.longitud = longitud;
         this.posicioni = posicioni;
         this.posicionj = posicionj;
         this.contenido = contenido;
+        this.color = color;
     }
 
     public String getNombre() {
@@ -72,6 +74,14 @@ public class Archivo {
 
     public void setContenido(String contenido) {
         this.contenido = contenido;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
     
     
