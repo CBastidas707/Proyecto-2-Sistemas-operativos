@@ -12,9 +12,12 @@ import Logica.Clases.Archivo;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -31,6 +34,8 @@ public class Pantalla extends javax.swing.JFrame {
     private Lista<Archivo> listaArchivos;
     private DefaultMutableTreeNode raiz;
     private int idSiguiente;
+    private String modoSistema;
+    private ArrayList<String> registrosModo = new ArrayList<>();
     
     
     public Pantalla(Lista<Archivo> listaArchivos) {
@@ -41,7 +46,16 @@ public class Pantalla extends javax.swing.JFrame {
         jTree1.setModel(treeDirectorio);
         this.listaArchivos = listaArchivos;
         idSiguiente = obtenerIdMasGrande() + 1;
+        modoSistema = "Usuario";
         llenarTablaArchivos();
+        
+        btnCrearArchivo.setVisible(false);
+        btnCrearCarpeta.setVisible(false);
+        btnEliminar.setVisible(false);
+        btnModificarContenido.setVisible(false);
+        btnModificarNombre.setVisible(false);
+        
+        
     }
     
     DefaultTreeModel treeDirectorio;
@@ -70,6 +84,8 @@ public class Pantalla extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JButton();
         btnModificarContenido = new javax.swing.JButton();
         btnModificarNombre = new javax.swing.JButton();
+        btnModo = new javax.swing.JButton();
+        btnLog = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -117,12 +133,12 @@ public class Pantalla extends javax.swing.JFrame {
         }
 
         jPanel1.add(jScrollPane1);
-        jScrollPane1.setBounds(30, 320, 440, 140);
+        jScrollPane1.setBounds(30, 340, 440, 140);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Estado del SD");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(30, 280, 130, 25);
+        jLabel1.setBounds(30, 290, 130, 25);
 
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -132,7 +148,7 @@ public class Pantalla extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTree1);
 
         jPanel1.add(jScrollPane2);
-        jScrollPane2.setBounds(30, 50, 440, 210);
+        jScrollPane2.setBounds(30, 60, 440, 210);
 
         btnCrearArchivo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearArchivo.setText("Crear archivo");
@@ -142,7 +158,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearArchivo);
-        btnCrearArchivo.setBounds(510, 130, 190, 50);
+        btnCrearArchivo.setBounds(510, 130, 150, 40);
 
         btnCrearCarpeta.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearCarpeta.setText("Crear carpeta");
@@ -152,7 +168,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearCarpeta);
-        btnCrearCarpeta.setBounds(510, 60, 190, 50);
+        btnCrearCarpeta.setBounds(510, 70, 150, 40);
 
         btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnEliminar.setText("Eliminar");
@@ -162,7 +178,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnEliminar);
-        btnEliminar.setBounds(510, 200, 190, 50);
+        btnEliminar.setBounds(510, 190, 150, 40);
 
         btnModificarContenido.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarContenido.setText("Modificar contenido");
@@ -172,7 +188,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarContenido);
-        btnModificarContenido.setBounds(740, 170, 190, 50);
+        btnModificarContenido.setBounds(690, 160, 180, 40);
 
         btnModificarNombre.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarNombre.setText("Modificar nombre");
@@ -182,17 +198,37 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarNombre);
-        btnModificarNombre.setBounds(740, 100, 190, 50);
+        btnModificarNombre.setBounds(690, 100, 180, 40);
+
+        btnModo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnModo.setText("Modo");
+        btnModo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnModo);
+        btnModo.setBounds(30, 20, 100, 30);
+
+        btnLog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLog.setText("Log de operaciones");
+        btnLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnLog);
+        btnLog.setBounds(160, 20, 200, 30);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 974, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1066, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE)
         );
 
         pack();
@@ -483,9 +519,23 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                     int longitud = Integer.parseInt(strLongitud);
 
                     if (longitud > 0) {
-                        String color = JOptionPane.showInputDialog("Color del archivo:");
+                        
+                        String[] colores = {
+                            "negro", "blanco", "rojo", "rojoclaro", "rojooscuro",
+                            "verde", "verdeclaro", "verdeoscuro", "azul", "azulclaro", "azuloscuro",
+                            "amarillo", "amarilloclaro", "amarillooscuro", "cyan", "cyanclaro", "cyanoscuro",
+                            "magenta", "magentaclaro", "magentaoscuro", "grisoscuro", "gris", "grisclaro",
+                            "naranja", "naranjaclaro", "naranjaoscuro", "rosa", "rosaoscuro"
+                        };
 
-                        if (color != null && !color.isEmpty()) {
+                        JComboBox<String> colorComboBox = new JComboBox<>(colores);
+
+                        int result = JOptionPane.showConfirmDialog(null, colorComboBox, "Color del archivo:", JOptionPane.OK_CANCEL_OPTION);
+
+                        if (result == JOptionPane.OK_OPTION) {
+                            
+                            String color = (String) colorComboBox.getSelectedItem();
+
                             // Verificar si hay suficientes espacios disponibles
                             if (contarCeldasDisponibles() < longitud) {
                                 JOptionPane.showMessageDialog(this, "No hay suficientes espacios disponibles para el archivo.");
@@ -517,7 +567,11 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                             }
                             this.idSiguiente++;
                   
+                            
+                        } else {
+                            System.out.println("Operación cancelada.");
                         }
+                        
                     }
                 }
             }
@@ -695,6 +749,65 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
         
     }//GEN-LAST:event_btnModificarContenidoActionPerformed
 
+    private void btnModoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModoActionPerformed
+        
+        String[] modos = {
+            "Administrador", "Usuario"
+        };
+
+        JComboBox<String> modoBox = new JComboBox<>(modos);
+
+        int result = JOptionPane.showConfirmDialog(this, modoBox, "Modo", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            
+            String modo = (String) modoBox.getSelectedItem();
+            System.out.println(modo);
+            
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaHora = ahora.format(formateador);
+
+            // Crear registro
+            String registro = "\n   Cambio de modo " + modoSistema + " a modo " + modo + ", Fecha/Hora: " + fechaHora;
+            registrosModo.add(registro);
+            
+            
+            if(modo == "Administrador"){
+                
+                btnCrearArchivo.setVisible(true);
+                btnCrearCarpeta.setVisible(true);
+                btnEliminar.setVisible(true);
+                btnModificarContenido.setVisible(true);
+                btnModificarNombre.setVisible(true);
+                
+            }else{
+                btnCrearArchivo.setVisible(false);
+                btnCrearCarpeta.setVisible(false);
+                btnEliminar.setVisible(false);
+                btnModificarContenido.setVisible(false);
+                btnModificarNombre.setVisible(false);
+            }
+
+        } else {
+            System.out.println("Operacion cancelada.");
+        }
+        
+    }//GEN-LAST:event_btnModoActionPerformed
+
+    private void btnLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogActionPerformed
+        
+        StringBuilder sb = new StringBuilder();
+        for (String registro : registrosModo) {
+            sb.append(registro).append("\n");
+        }
+
+        LogFrame logFrame = new LogFrame(); // Crea una instancia del LogFrame
+        logFrame.logTextArea.setText(sb.toString()); // Establece el texto del JTextArea
+        logFrame.setVisible(true); // Hace visible el JFrame
+        
+    }//GEN-LAST:event_btnLogActionPerformed
+
     
     private void borrarArchivosDeCarpeta(DefaultMutableTreeNode carpetaNodo) {
     if (carpetaNodo instanceof DefaultMutableTreeNode) {
@@ -761,8 +874,10 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
     private javax.swing.JButton btnCrearArchivo;
     private javax.swing.JButton btnCrearCarpeta;
     private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnLog;
     private javax.swing.JButton btnModificarContenido;
     private javax.swing.JButton btnModificarNombre;
+    private javax.swing.JButton btnModo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
