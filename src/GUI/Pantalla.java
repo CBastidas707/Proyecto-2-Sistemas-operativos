@@ -463,6 +463,15 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 String contenido = archivo.getContenido(); // Obtiene el contenido del archivo
                 String texto = "Contenido del archivo: " + contenido;
                 JOptionPane.showMessageDialog(this, texto);
+                
+                LocalDateTime ahora = LocalDateTime.now();
+                DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String fechaHora = ahora.format(formateador);
+
+                // Crear registro
+                String registro = "\n   El usuario " + this.modoSistema + " leyó el archivo " + archivo.getNombre() + " (ID " + archivo.getId() + "), Fecha/Hora: " + fechaHora;
+                listaLogOperaciones.add(registro);
+                
             } else {
                 JOptionPane.showMessageDialog(this, "El nodo no contiene un archivo válido o es una carpeta");
             }
@@ -826,12 +835,16 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 btnModificarContenido.setVisible(true);
                 btnModificarNombre.setVisible(true);
                 
+                this.modoSistema = "Administrador";
+                
             }else{
                 btnCrearArchivo.setVisible(false);
                 btnCrearCarpeta.setVisible(false);
                 btnEliminar.setVisible(false);
                 btnModificarContenido.setVisible(false);
                 btnModificarNombre.setVisible(false);
+                
+                this.modoSistema = "Usuario";
             }
 
         } else {
