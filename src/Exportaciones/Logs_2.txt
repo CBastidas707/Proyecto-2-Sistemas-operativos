@@ -1,0 +1,48 @@
+
+   Cambio de modo Usuario a modo Administrador, Fecha/Hora: 2025-03-21 03:22:09
+
+   Se creó la carpeta Carpeta1, Fecha/Hora: 2025-03-21 03:22:14
+
+   Se creó la carpeta Carpeta2, Fecha/Hora: 2025-03-21 03:22:20
+
+   Se creó el archivo Archivo1 (ID 1), Fecha/Hora: 2025-03-21 03:22:31
+
+   Se creó el archivo Archivo1 (ID 1), Fecha/Hora: 2025-03-21 03:22:31
+
+   Se creó el archivo Archivo1 (ID 1), Fecha/Hora: 2025-03-21 03:22:31
+
+   Se creó el archivo Archivo1 (ID 1), Fecha/Hora: 2025-03-21 03:22:31
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Se creó el archivo Archivo2 (ID 2), Fecha/Hora: 2025-03-21 03:22:51
+
+   Cambio de modo Administrador a modo Usuario, Fecha/Hora: 2025-03-21 03:23:02
+
+   Cambio de modo Usuario a modo Administrador, Fecha/Hora: 2025-03-21 03:23:05
+
+   Cambio de modo Administrador a modo Usuario, Fecha/Hora: 2025-03-21 03:23:15
+
+   Cambio de modo Usuario a modo Usuario, Fecha/Hora: 2025-03-21 03:23:17
+
+   Cambio de modo Usuario a modo Administrador, Fecha/Hora: 2025-03-21 03:23:23
