@@ -12,9 +12,12 @@ import Logica.Clases.Archivo;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -37,6 +40,8 @@ public class Pantalla extends javax.swing.JFrame {
     private Lista<Archivo> listaArchivos;
     private DefaultMutableTreeNode raiz;
     private int idSiguiente;
+    private String modoSistema;
+    private ArrayList<String> listaLogOperaciones = new ArrayList<>();
     
     
     public Pantalla(Lista<Archivo> listaArchivos) {
@@ -47,7 +52,13 @@ public class Pantalla extends javax.swing.JFrame {
         jTree1.setModel(treeDirectorio);
         this.listaArchivos = listaArchivos;
         idSiguiente = obtenerIdMasGrande() + 1;
+        modoSistema = "Usuario";
         llenarTablaArchivos();
+        btnCrearArchivo.setVisible(false);
+        btnCrearCarpeta.setVisible(false);
+        btnEliminar.setVisible(false);
+        btnModificarContenido.setVisible(false);
+        btnModificarNombre.setVisible(false);
         actualizarTabla();
     }
     
@@ -77,6 +88,8 @@ public class Pantalla extends javax.swing.JFrame {
         btnEliminar = new javax.swing.JButton();
         btnModificarContenido = new javax.swing.JButton();
         btnModificarNombre = new javax.swing.JButton();
+        btnModo = new javax.swing.JButton();
+        btnLog = new javax.swing.JButton();
         btnImportarArchivos = new javax.swing.JButton();
         btnExportarArchivos = new javax.swing.JButton();
         btnImportarArbol = new javax.swing.JButton();
@@ -145,7 +158,7 @@ public class Pantalla extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTree1);
 
         jPanel1.add(jScrollPane2);
-        jScrollPane2.setBounds(30, 50, 440, 210);
+        jScrollPane2.setBounds(30, 60, 440, 210);
 
         btnCrearArchivo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearArchivo.setText("Crear archivo");
@@ -195,6 +208,26 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarNombre);
+
+        btnModo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnModo.setText("Modo");
+        btnModo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnModoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnModo);
+        btnModo.setBounds(30, 20, 100, 30);
+
+        btnLog.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLog.setText("Log de operaciones");
+        btnLog.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnLog);
+        btnLog.setBounds(160, 20, 200, 30);
         btnModificarNombre.setBounds(500, 180, 170, 30);
 
         btnImportarArchivos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -270,6 +303,7 @@ public class Pantalla extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1120, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -509,6 +543,15 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 String contenido = archivo.getContenido(); // Obtiene el contenido del archivo
                 String texto = "Contenido del archivo: " + contenido;
                 JOptionPane.showMessageDialog(this, texto);
+                
+                LocalDateTime ahora = LocalDateTime.now();
+                DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String fechaHora = ahora.format(formateador);
+
+                // Crear registro
+                String registro = "\n   El usuario " + this.modoSistema + " leyó el archivo " + archivo.getNombre() + " (ID " + archivo.getId() + "), Fecha/Hora: " + fechaHora;
+                listaLogOperaciones.add(registro);
+                
             } else {
                 JOptionPane.showMessageDialog(this, "El nodo no contiene un archivo válido o es una carpeta");
             }
@@ -565,15 +608,29 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                     int longitud = Integer.parseInt(strLongitud);
 
                     if (longitud > 0) {
-                        String color = JOptionPane.showInputDialog("Color del archivo:");
+                        
+                        String[] colores = {
+                            "negro", "blanco", "rojo", "rojoclaro", "rojooscuro",
+                            "verde", "verdeclaro", "verdeoscuro", "azul", "azulclaro", "azuloscuro",
+                            "amarillo", "amarilloclaro", "amarillooscuro", "cyan", "cyanclaro", "cyanoscuro",
+                            "magenta", "magentaclaro", "magentaoscuro", "grisoscuro", "gris", "grisclaro",
+                            "naranja", "naranjaclaro", "naranjaoscuro", "rosa", "rosaoscuro"
+                        };
 
-                        if (color != null && !color.isEmpty()) {
+                        JComboBox<String> colorComboBox = new JComboBox<>(colores);
+
+                        int result = JOptionPane.showConfirmDialog(null, colorComboBox, "Color del archivo:", JOptionPane.OK_CANCEL_OPTION);
+
+                        if (result == JOptionPane.OK_OPTION) {
+                            
+                            String color = (String) colorComboBox.getSelectedItem();
+
                             // Verificar si hay suficientes espacios disponibles
                             if (contarCeldasDisponibles() < longitud) {
                                 JOptionPane.showMessageDialog(this, "No hay suficientes espacios disponibles para el archivo.");
                                 return; // Salir del método si no hay suficientes espacios
                             }
-
+                            
                             // Agregar archivos en diferentes posiciones
                             boolean verTree = true; // Esto es un indicador para que solo se agregue al Jtree una vez
                             
@@ -584,6 +641,15 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                                     listaArchivos.append(archivo);
                                     llenarTablaArchivos();
                                     actualizarTabla();
+                                    
+                                    LocalDateTime ahora = LocalDateTime.now();
+                                    DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                                    String fechaHora = ahora.format(formateador);
+
+                                    // Crear registro
+                                    String registro = "\n   Se creó el archivo " + nombre + " (ID " + asignarID() + "), Fecha/Hora: " + fechaHora;
+                                    listaLogOperaciones.add(registro);
+                                    
                                     
                                     if(verTree){
                                         DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode(archivo);
@@ -600,7 +666,11 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                             }
                             this.idSiguiente++;
                   
+                            
+                        } else {
+                            System.out.println("Operación cancelada.");
                         }
+                        
                     }
                 }
             }
@@ -623,6 +693,15 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
         String nombre = JOptionPane.showInputDialog("Nombre de la carpeta:");
         if (nombre != null && !nombre.isEmpty()) {
             DefaultMutableTreeNode nuevoNodo = new DefaultMutableTreeNode(nombre);
+            
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaHora = ahora.format(formateador);
+
+            // Crear registro
+            String registro = "\n   Se creó la carpeta " + nombre + ", Fecha/Hora: " + fechaHora;
+            listaLogOperaciones.add(registro);
+            
             if (nodoSeleccionado == null) {
                 // Si no hay nodo seleccionado, agrega a la raíz
                 treeDirectorio.insertNodeInto(nuevoNodo, (DefaultMutableTreeNode) treeDirectorio.getRoot(), treeDirectorio.getChildCount(treeDirectorio.getRoot()));
@@ -726,6 +805,13 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 System.out.println("El archivo \"" + contenidoActual + "\" (ID: " + archivo.getId() + ") " + "ha sido renombrado a \"" + archivo.getNombre() + "\"" );
                 
                 llenarTablaArchivos();
+                LocalDateTime ahora = LocalDateTime.now();
+                DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String fechaHora = ahora.format(formateador);
+
+                // Crear registro
+                String registro = "\n   Se renombró el archivo " + contenidoActual + " (ID " + archivo.getId() +  ") a " + archivo.getNombre() + ", Fecha/Hora: " + fechaHora;
+                listaLogOperaciones.add(registro);
                 actualizarTabla();
             }
             
@@ -734,11 +820,21 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
             String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", "Modificar Nombre", JOptionPane.QUESTION_MESSAGE);
 
             if (nuevoNombre != null && !nuevoNombre.isEmpty()) {
+                Object data = nodoSeleccionado.getUserObject();
+                String nombreAnterior = (String) data;
                 nodoSeleccionado.setUserObject(nuevoNombre); // Cambia el nombre en el nodo
                 DefaultTreeModel modelo = (DefaultTreeModel) jTree1.getModel();
                 modelo.nodeChanged(nodoSeleccionado); // Notifica al modelo del cambio
                 
-                System.out.println("La carpeta ha sido renombrada a " + nuevoNombre);
+                System.out.println("La carpeta " + nombreAnterior + " ha sido renombrada a " + nuevoNombre);
+                
+                LocalDateTime ahora = LocalDateTime.now();
+                DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String fechaHora = ahora.format(formateador);
+
+                // Crear registro
+                String registro = "\n   Se renombró la carpeta " + nombreAnterior + " a " + nuevoNombre + ", Fecha/Hora: " + fechaHora;
+                listaLogOperaciones.add(registro);
             }
             
         }
@@ -768,10 +864,18 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 
                 for (int i = listaAuxiliar.size() - 1; i >= 0; i--) { // Recorre en orden inverso
                     Archivo archivoAuxiliar = listaAuxiliar.get(i);
-                    archivo.setContenido(nuevoContenido);
+                    archivoAuxiliar.setContenido(nuevoContenido);
 
                 }
                 llenarTablaArchivos();
+                LocalDateTime ahora = LocalDateTime.now();
+                DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String fechaHora = ahora.format(formateador);
+
+                // Crear registro
+                String registro = "\n   Se modificó el archivo " + archivo.getNombre() + " (ID " + archivo.getId() + "), Fecha/Hora: " + fechaHora;
+                listaLogOperaciones.add(registro);
+
                 actualizarTabla();
             }
         } else {
@@ -780,6 +884,69 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
         
         
     }//GEN-LAST:event_btnModificarContenidoActionPerformed
+
+    private void btnModoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModoActionPerformed
+        
+        String[] modos = {
+            "Administrador", "Usuario"
+        };
+
+        JComboBox<String> modoBox = new JComboBox<>(modos);
+
+        int result = JOptionPane.showConfirmDialog(this, modoBox, "Modo", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            
+            String modo = (String) modoBox.getSelectedItem();
+            System.out.println(modo);
+            
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaHora = ahora.format(formateador);
+
+            // Crear registro
+            String registro = "\n   Cambio de modo " + modoSistema + " a modo " + modo + ", Fecha/Hora: " + fechaHora;
+            listaLogOperaciones.add(registro);
+            
+            
+            if(modo == "Administrador"){
+                
+                btnCrearArchivo.setVisible(true);
+                btnCrearCarpeta.setVisible(true);
+                btnEliminar.setVisible(true);
+                btnModificarContenido.setVisible(true);
+                btnModificarNombre.setVisible(true);
+                
+                this.modoSistema = "Administrador";
+                
+            }else{
+                btnCrearArchivo.setVisible(false);
+                btnCrearCarpeta.setVisible(false);
+                btnEliminar.setVisible(false);
+                btnModificarContenido.setVisible(false);
+                btnModificarNombre.setVisible(false);
+                
+                this.modoSistema = "Usuario";
+            }
+
+        } else {
+            System.out.println("Operacion cancelada.");
+        }
+        
+    }//GEN-LAST:event_btnModoActionPerformed
+
+    private void btnLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogActionPerformed
+        
+        StringBuilder sb = new StringBuilder();
+        for (String registro : listaLogOperaciones) {
+            sb.append(registro).append("\n");
+        }
+
+        LogFrame logFrame = new LogFrame(); // Crea una instancia del LogFrame
+        logFrame.logTextArea.setText(sb.toString()); // Establece el texto del JTextArea
+        logFrame.setVisible(true); // Hace visible el JFrame
+        
+    }//GEN-LAST:event_btnLogActionPerformed
 
     private void btnExportarArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarArchivosActionPerformed
         exportarArchivosJson();
@@ -799,25 +966,35 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
 
     
     private void borrarArchivosDeCarpeta(DefaultMutableTreeNode carpetaNodo) {
-    if (carpetaNodo instanceof DefaultMutableTreeNode) {
-        Enumeration<TreeNode> hijos = carpetaNodo.children(); // Cambiado a Enumeration<TreeNode>
-        while (hijos.hasMoreElements()) {
-            TreeNode hijo = hijos.nextElement(); // Cambiado a TreeNode
-            if (hijo instanceof DefaultMutableTreeNode) { // Verifica si es DefaultMutableTreeNode
-                DefaultMutableTreeNode defaultHijo = (DefaultMutableTreeNode) hijo; // Casting seguro
-                Object userObject = defaultHijo.getUserObject();
-                if (userObject instanceof Archivo) {
-                    Archivo archivo = (Archivo) userObject;
-                    borrarArchivo(archivo.getId());
-                } else {
-                    borrarArchivosDeCarpeta(defaultHijo); // Llama recursivamente con DefaultMutableTreeNode
+        
+
+        LocalDateTime ahora = LocalDateTime.now();
+        DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String fechaHora = ahora.format(formateador);
+
+        // Crear registro
+        String registro = "\n   Se eliminó la carpeta " + carpetaNodo.getUserObject().toString() + ", Fecha/Hora: " + fechaHora;
+        listaLogOperaciones.add(registro);
+        
+        if (carpetaNodo instanceof DefaultMutableTreeNode) {
+            Enumeration<TreeNode> hijos = carpetaNodo.children();
+            while (hijos.hasMoreElements()) {
+                TreeNode hijo = hijos.nextElement();
+                if (hijo instanceof DefaultMutableTreeNode) {
+                    DefaultMutableTreeNode defaultHijo = (DefaultMutableTreeNode) hijo;
+                    Object userObject = defaultHijo.getUserObject();
+                    if (userObject instanceof Archivo) {
+                        Archivo archivo = (Archivo) userObject;
+                        borrarArchivo(archivo.getId());
+                    } else {
+                        borrarArchivosDeCarpeta(defaultHijo); // Llama recursivamente con DefaultMutableTreeNode
+                    }
                 }
             }
+        } else {
+            System.err.println("Error: carpetaNodo no es DefaultMutableTreeNode");
+            JOptionPane.showMessageDialog(this, "Error al borrar la carpeta.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    } else {
-        System.err.println("Error: carpetaNodo no es DefaultMutableTreeNode");
-        JOptionPane.showMessageDialog(this, "Error al borrar la carpeta.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
 }
 
     public Lista<Archivo> filtrarArchivos(int id_filtro) {
@@ -842,6 +1019,14 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
             listaArchivos.deleteByIndex(i);
             existe = true;
             System.out.println("Archivo " + archivo.getNombre() + "(ID: " + archivo.getId() + ")" + " eliminado");
+            
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaHora = ahora.format(formateador);
+
+            // Crear registro
+            String registro = "\n   Se eliminó el archivo " + archivo.getNombre() + " (ID " + archivo.getId() + "), Fecha/Hora: " + fechaHora;
+            listaLogOperaciones.add(registro);
         }
     }
 
@@ -923,12 +1108,14 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
     private javax.swing.JButton btnCrearArchivo;
     private javax.swing.JButton btnCrearCarpeta;
     private javax.swing.JButton btnEliminar;
+    private javax.swing.JButton btnLog;
     private javax.swing.JButton btnExportarArbol;
     private javax.swing.JButton btnExportarArchivos;
     private javax.swing.JButton btnImportarArbol;
     private javax.swing.JButton btnImportarArchivos;
     private javax.swing.JButton btnModificarContenido;
     private javax.swing.JButton btnModificarNombre;
+    private javax.swing.JButton btnModo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
