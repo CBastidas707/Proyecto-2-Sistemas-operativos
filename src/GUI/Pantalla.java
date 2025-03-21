@@ -9,6 +9,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import Logica.Estructuras.Lista;
 import Logica.Clases.Archivo;
+import Logica.Clases.TreeNodeData;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
@@ -26,6 +27,7 @@ import javax.swing.tree.TreeNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -59,6 +61,9 @@ public class Pantalla extends javax.swing.JFrame {
         btnEliminar.setVisible(false);
         btnModificarContenido.setVisible(false);
         btnModificarNombre.setVisible(false);
+        btnLogBackup.setVisible(false);
+        btnImportarArchivos.setVisible(false);     //Estos dos botones eran para pruebas. Cumplieron su cometido.
+        btnExportarArchivos.setVisible(false);
         actualizarTabla();
     }
     
@@ -96,6 +101,8 @@ public class Pantalla extends javax.swing.JFrame {
         btnExportarArbol = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaAsignacionArchivos = new javax.swing.JTable();
+        btnLogBackup = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -168,7 +175,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearArchivo);
-        btnCrearArchivo.setBounds(500, 100, 170, 30);
+        btnCrearArchivo.setBounds(480, 80, 170, 30);
 
         btnCrearCarpeta.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearCarpeta.setText("Crear carpeta");
@@ -178,7 +185,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearCarpeta);
-        btnCrearCarpeta.setBounds(500, 60, 170, 30);
+        btnCrearCarpeta.setBounds(480, 40, 170, 30);
 
         btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnEliminar.setText("Eliminar");
@@ -188,7 +195,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnEliminar);
-        btnEliminar.setBounds(500, 140, 170, 30);
+        btnEliminar.setBounds(480, 120, 170, 30);
 
         btnModificarContenido.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarContenido.setText("Modificar contenido");
@@ -198,7 +205,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarContenido);
-        btnModificarContenido.setBounds(500, 220, 170, 30);
+        btnModificarContenido.setBounds(480, 200, 170, 30);
 
         btnModificarNombre.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarNombre.setText("Modificar nombre");
@@ -208,6 +215,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarNombre);
+        btnModificarNombre.setBounds(480, 160, 170, 30);
 
         btnModo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModo.setText("Modo");
@@ -227,8 +235,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnLog);
-        btnLog.setBounds(160, 20, 200, 30);
-        btnModificarNombre.setBounds(500, 180, 170, 30);
+        btnLog.setBounds(480, 240, 170, 30);
 
         btnImportarArchivos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnImportarArchivos.setText("Importar Archivos");
@@ -258,7 +265,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnImportarArbol);
-        btnImportarArbol.setBounds(220, 270, 170, 30);
+        btnImportarArbol.setBounds(220, 280, 170, 30);
 
         btnExportarArbol.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnExportarArbol.setText("Exportar JTree");
@@ -268,21 +275,21 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnExportarArbol);
-        btnExportarArbol.setBounds(40, 270, 170, 30);
+        btnExportarArbol.setBounds(40, 280, 170, 30);
 
         tablaAsignacionArchivos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nombre", "N° de Bloques", "Ubicación"
+                "ID", "Nombre", "N° de Bloques", "Ubicación", "Color"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -294,16 +301,29 @@ public class Pantalla extends javax.swing.JFrame {
         jPanel1.add(jScrollPane3);
         jScrollPane3.setBounds(610, 370, 500, 140);
 
+        btnLogBackup.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnLogBackup.setText("Respaldar Log");
+        btnLogBackup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLogBackupActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnLogBackup);
+        btnLogBackup.setBounds(480, 280, 170, 30);
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos Gráficos/thumbsUp.jpg"))); // NOI18N
+        jLabel2.setText("jLabel2");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(760, 60, 240, 240);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1120, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1126, Short.MAX_VALUE))
         );
-
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -916,6 +936,7 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 btnEliminar.setVisible(true);
                 btnModificarContenido.setVisible(true);
                 btnModificarNombre.setVisible(true);
+                btnLogBackup.setVisible(true);
                 
                 this.modoSistema = "Administrador";
                 
@@ -925,6 +946,7 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 btnEliminar.setVisible(false);
                 btnModificarContenido.setVisible(false);
                 btnModificarNombre.setVisible(false);
+                btnLogBackup.setVisible(false);
                 
                 this.modoSistema = "Usuario";
             }
@@ -957,12 +979,16 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
     }//GEN-LAST:event_btnImportarArchivosActionPerformed
 
     private void btnImportarArbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportarArbolActionPerformed
-        // AQUÍ VA LA LÓGICA DE IMPORTACIÓN DE JTREE
+        importarArbolJson();
     }//GEN-LAST:event_btnImportarArbolActionPerformed
 
     private void btnExportarArbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarArbolActionPerformed
-        // AQUÍ VA LA LÓGICA DE EXPORTACIÓN DE JTREE
+        exportarArbolJson();
     }//GEN-LAST:event_btnExportarArbolActionPerformed
+
+    private void btnLogBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogBackupActionPerformed
+        exportarLogOperaciones();
+    }//GEN-LAST:event_btnLogBackupActionPerformed
 
     
     private void borrarArchivosDeCarpeta(DefaultMutableTreeNode carpetaNodo) {
@@ -1046,7 +1072,14 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
             writer.write(json);
             writer.flush();
             System.out.println("Ruta de exportación: " + rutaArchivo);
-            JOptionPane.showMessageDialog(this,"Archivos exportados exitosamente.");
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaHora = ahora.format(formateador);
+
+            // Crear registro
+            String registro = "\n   Se exportó un lote de "+listaArchivos.size()+" archivos, Fecha/Hora: " + fechaHora;
+            listaLogOperaciones.add(registro);
+//            JOptionPane.showMessageDialog(this,"Archivos exportados exitosamente.");
         } catch (IOException e) {
             System.out.println("Ocurrió un error al exportar el archivo: "+e);
             JOptionPane.showMessageDialog(this, "Hubo un error en la exportación. Intente de nuevo.");
@@ -1062,7 +1095,14 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
             Lista<Archivo> archivosImportados = gson.fromJson(reader, listaArchivoType); //Convierte el JSON en Lista
             listaArchivos = archivosImportados;
             System.out.println("Ruta de importación: " + rutaArchivo);
-            JOptionPane.showMessageDialog(this,"Archivos impotados exitosamente.");
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String fechaHora = ahora.format(formateador);
+
+            // Crear registro
+            String registro = "\n   Se importó un lote de "+listaArchivos.size()+" archivos, Fecha/Hora: " + fechaHora;
+            listaLogOperaciones.add(registro);
+//            JOptionPane.showMessageDialog(this,"Archivos impotados exitosamente.");
             llenarTablaArchivos();
             actualizarTabla();
         } catch (IOException e) {
@@ -1093,12 +1133,156 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
             // Si no existe, agrega el archivo a la tabla
             if (!existe) {
                 String parOrdenado = "("+archivo.getPosicionj()+","+archivo.getPosicioni()+")";
-                model.addRow(new Object[]{archivo.getId(), archivo.getNombre(), archivo.getLongitud(), parOrdenado});
+                model.addRow(new Object[]{archivo.getId(), archivo.getNombre(), archivo.getLongitud(), parOrdenado, archivo.getColor()});
             }
         }
     }
     
+    private void exportarLogOperaciones() {
+        String carpetaExportaciones = "src/Exportaciones/";
+        String prefijoArchivo = "Logs_";
+        String extensionArchivo = ".txt";
+
+        int numeroMaximo = 0;
+
+        File carpeta = new File(carpetaExportaciones);
+        if (!carpeta.exists()) {
+            carpeta.mkdirs(); // Crea la carpeta si no existe
+        }
+
+        File[] archivos = carpeta.listFiles();
+        if (archivos != null) {
+            for (File archivo : archivos) {
+                String nombre = archivo.getName();
+                if (nombre.startsWith(prefijoArchivo) && nombre.endsWith(extensionArchivo)) {
+                    try {
+                        String numeroStr = nombre.substring(prefijoArchivo.length(), nombre.length() - extensionArchivo.length());
+                        int numero = Integer.parseInt(numeroStr);
+                        if (numero > numeroMaximo) {
+                            numeroMaximo = numero;
+                        }
+                    } catch (NumberFormatException e) {
+                        // Ignorar archivos que no cumplan con el formato
+                    }
+                }
+            }
+        }
+
+        int nuevoNumero = numeroMaximo + 1;
+        String nuevoArchivoNombre = prefijoArchivo + nuevoNumero + extensionArchivo;
+        String rutaArchivo = carpetaExportaciones + nuevoArchivoNombre;
+
+        StringBuilder sb = new StringBuilder();
+        for (String registro : listaLogOperaciones) {
+            sb.append(registro).append("\n");
+        }
+
+        try (FileWriter writer = new FileWriter(rutaArchivo)) {
+            writer.write(sb.toString());
+            writer.flush();
+            System.out.println("Log exportado correctamente en: " + rutaArchivo);
+            JOptionPane.showMessageDialog(this, "Log exportado exitosamente en:\n" + rutaArchivo);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al exportar el log.");
+        }
+    }
+
     
+    // SECCIÓN RESPALDO ÁRBOL
+    
+    private TreeNodeData convertirNodo(DefaultMutableTreeNode nodo) {
+        Object userObject = nodo.getUserObject();
+
+        if (userObject instanceof Archivo) {
+            Archivo archivo = (Archivo) userObject;
+            return new TreeNodeData(archivo); // Crear nodo serializable para archivo
+        } else {
+            TreeNodeData nodoData = new TreeNodeData(userObject.toString(), true); // Nodo carpeta
+
+            // Recorrer los hijos del nodo
+            Enumeration<TreeNode> hijos = nodo.children();
+            while (hijos.hasMoreElements()) {
+                DefaultMutableTreeNode hijo = (DefaultMutableTreeNode) hijos.nextElement();
+                nodoData.agregarHijo(convertirNodo(hijo)); // Llamada recursiva
+            }
+            return nodoData;
+        }
+    }
+
+    
+    private void exportarArbolJson() {
+        // Exportar visualmente el árbol (estructura del JTree)
+        TreeNodeData raizData = convertirNodo((DefaultMutableTreeNode) treeDirectorio.getRoot());
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(raizData);
+
+        String rutaArchivo = "src/Exportaciones/ArbolDirectorio.json";
+        try (FileWriter writer = new FileWriter(rutaArchivo)) {
+            writer.write(json);
+            writer.flush();
+            System.out.println("Estructura del árbol exportada correctamente en: " + rutaArchivo);
+            JOptionPane.showMessageDialog(this, "Estructura del árbol exportada exitosamente en:\n" + rutaArchivo);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al exportar la estructura del árbol.");
+        }
+
+        // Exportar los datos de los archivos en paralelo
+        exportarArchivosJson();
+    }
+
+
+    private DefaultMutableTreeNode reconstruirArbol(TreeNodeData nodoData) {
+        DefaultMutableTreeNode nodo;
+
+        if (!nodoData.isEsCarpeta()) {
+            // Crear un objeto Archivo con los datos restaurados
+            Archivo archivo = new Archivo(
+                nodoData.getNombre(),
+                asignarID(), // Generar un ID único
+                nodoData.getLongitud(),
+                nodoData.getPosicioni(),
+                nodoData.getPosicionj(),
+                nodoData.getContenido(),
+                nodoData.getColor()
+            );
+            nodo = new DefaultMutableTreeNode(archivo);
+            listaArchivos.append(archivo); // Sincronizar con listaArchivos
+        } else {
+            nodo = new DefaultMutableTreeNode(nodoData.getNombre());
+        }
+
+        // Recorrer los hijos y reconstruirlos recursivamente
+        for (int i = 0; i < nodoData.getHijos().size(); i++) {
+            TreeNodeData hijoData = nodoData.getHijos().get(i);
+            nodo.add(reconstruirArbol(hijoData)); // Llamada recursiva
+        }
+
+        return nodo;
+    }
+
+    private void importarArbolJson() {
+        String rutaArchivo = "src/Exportaciones/ArbolDirectorio.json";
+
+        try (FileReader reader = new FileReader(rutaArchivo)) {
+            Gson gson = new Gson();
+            TreeNodeData raizData = gson.fromJson(reader, TreeNodeData.class);
+
+            // Reconstruir árbol
+            DefaultMutableTreeNode nuevaRaiz = reconstruirArbol(raizData);
+            treeDirectorio.setRoot(nuevaRaiz);
+            jTree1.setModel(treeDirectorio); // Actualizar JTree
+
+            System.out.println("Estructura del árbol importada correctamente desde: " + rutaArchivo);
+            JOptionPane.showMessageDialog(this, "Estructura del árbol importada exitosamente.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al importar la estructura del árbol.");
+        }
+
+        importarArchivosJson();
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -1108,15 +1292,17 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
     private javax.swing.JButton btnCrearArchivo;
     private javax.swing.JButton btnCrearCarpeta;
     private javax.swing.JButton btnEliminar;
-    private javax.swing.JButton btnLog;
     private javax.swing.JButton btnExportarArbol;
     private javax.swing.JButton btnExportarArchivos;
     private javax.swing.JButton btnImportarArbol;
     private javax.swing.JButton btnImportarArchivos;
+    private javax.swing.JButton btnLog;
+    private javax.swing.JButton btnLogBackup;
     private javax.swing.JButton btnModificarContenido;
     private javax.swing.JButton btnModificarNombre;
     private javax.swing.JButton btnModo;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
