@@ -1,0 +1,158 @@
+{
+  "pFirst": {
+    "tInfo": {
+      "nombre": "archivo1.txt",
+      "id": 1,
+      "longitud": 2,
+      "posicioni": 0,
+      "posicionj": 0,
+      "contenido": "Contenido de archivo1",
+      "color": "rojo"
+    },
+    "pNext": {
+      "tInfo": {
+        "nombre": "archivo2.txt",
+        "id": 2,
+        "longitud": 1,
+        "posicioni": 3,
+        "posicionj": 1,
+        "contenido": "Contenido de archivo2",
+        "color": "azul"
+      },
+      "pNext": {
+        "tInfo": {
+          "nombre": "archivo3.txt",
+          "id": 3,
+          "longitud": 2,
+          "posicioni": 4,
+          "posicionj": 2,
+          "contenido": "Contenido de archivo3",
+          "color": "azulOscuro"
+        },
+        "pNext": {
+          "tInfo": {
+            "nombre": "archivo4.txt",
+            "id": 4,
+            "longitud": 1,
+            "posicioni": 0,
+            "posicionj": 2,
+            "contenido": "Contenido de archivo4",
+            "color": "naranja"
+          },
+          "pNext": {
+            "tInfo": {
+              "nombre": "archivo5.txt",
+              "id": 5,
+              "longitud": 1,
+              "posicioni": 0,
+              "posicionj": 4,
+              "contenido": "Contenido de archivo5",
+              "color": "naranjaoscuro"
+            },
+            "pNext": {
+              "tInfo": {
+                "nombre": "archivo1.txt",
+                "id": 1,
+                "longitud": 2,
+                "posicioni": 0,
+                "posicionj": 1,
+                "contenido": "Contenido duplicado de archivo1",
+                "color": "rojo"
+              },
+              "pNext": {
+                "tInfo": {
+                  "nombre": "archivo3.txt",
+                  "id": 3,
+                  "longitud": 2,
+                  "posicioni": 4,
+                  "posicionj": 3,
+                  "contenido": "Contenido duplicado de archivo3",
+                  "color": "azuloscuro"
+                },
+                "pNext": {
+                  "tInfo": {
+                    "nombre": "archivo6.txt",
+                    "id": 6,
+                    "longitud": 1,
+                    "posicioni": 0,
+                    "posicionj": 5,
+                    "contenido": "Contenido de archivo6",
+                    "color": "rosa"
+                  },
+                  "pNext": {
+                    "tInfo": {
+                      "nombre": "archivo7.txt",
+                      "id": 7,
+                      "longitud": 1,
+                      "posicioni": 1,
+                      "posicionj": 6,
+                      "contenido": "Contenido de archivo7",
+                      "color": "verde"
+                    },
+                    "pNext": {
+                      "tInfo": {
+                        "nombre": "archivo8.txt",
+                        "id": 8,
+                        "longitud": 1,
+                        "posicioni": 0,
+                        "posicionj": 7,
+                        "contenido": "Contenido de archivo8",
+                        "color": "rosaoscuro"
+                      },
+                      "pNext": {
+                        "tInfo": {
+                          "nombre": "archivo9",
+                          "id": 9,
+                          "longitud": 4,
+                          "posicioni": 0,
+                          "posicionj": 3,
+                          "contenido": "archivo9",
+                          "color": "magenta"
+                        },
+                        "pNext": {
+                          "tInfo": {
+                            "nombre": "archivo9",
+                            "id": 9,
+                            "longitud": 4,
+                            "posicioni": 0,
+                            "posicionj": 6,
+                            "contenido": "archivo9",
+                            "color": "magenta"
+                          },
+                          "pNext": {
+                            "tInfo": {
+                              "nombre": "archivo9",
+                              "id": 9,
+                              "longitud": 4,
+                              "posicioni": 1,
+                              "posicionj": 0,
+                              "contenido": "archivo9",
+                              "color": "magenta"
+                            },
+                            "pNext": {
+                              "tInfo": {
+                                "nombre": "archivo9",
+                                "id": 9,
+                                "longitud": 4,
+                                "posicioni": 1,
+                                "posicionj": 1,
+                                "contenido": "archivo9",
+                                "color": "magenta"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "name": "Archivos",
+  "iN": 14
+}
