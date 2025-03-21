@@ -23,6 +23,12 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.TreeNode;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  *
@@ -48,14 +54,12 @@ public class Pantalla extends javax.swing.JFrame {
         idSiguiente = obtenerIdMasGrande() + 1;
         modoSistema = "Usuario";
         llenarTablaArchivos();
-        
         btnCrearArchivo.setVisible(false);
         btnCrearCarpeta.setVisible(false);
         btnEliminar.setVisible(false);
         btnModificarContenido.setVisible(false);
         btnModificarNombre.setVisible(false);
-        
-        
+        actualizarTabla();
     }
     
     DefaultTreeModel treeDirectorio;
@@ -86,6 +90,12 @@ public class Pantalla extends javax.swing.JFrame {
         btnModificarNombre = new javax.swing.JButton();
         btnModo = new javax.swing.JButton();
         btnLog = new javax.swing.JButton();
+        btnImportarArchivos = new javax.swing.JButton();
+        btnExportarArchivos = new javax.swing.JButton();
+        btnImportarArbol = new javax.swing.JButton();
+        btnExportarArbol = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablaAsignacionArchivos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -133,12 +143,12 @@ public class Pantalla extends javax.swing.JFrame {
         }
 
         jPanel1.add(jScrollPane1);
-        jScrollPane1.setBounds(30, 340, 440, 140);
+        jScrollPane1.setBounds(30, 370, 560, 140);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Estado del SD");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(30, 290, 130, 25);
+        jLabel1.setBounds(30, 330, 130, 25);
 
         jTree1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -158,7 +168,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearArchivo);
-        btnCrearArchivo.setBounds(510, 130, 150, 40);
+        btnCrearArchivo.setBounds(500, 100, 170, 30);
 
         btnCrearCarpeta.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnCrearCarpeta.setText("Crear carpeta");
@@ -168,7 +178,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnCrearCarpeta);
-        btnCrearCarpeta.setBounds(510, 70, 150, 40);
+        btnCrearCarpeta.setBounds(500, 60, 170, 30);
 
         btnEliminar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnEliminar.setText("Eliminar");
@@ -178,7 +188,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnEliminar);
-        btnEliminar.setBounds(510, 190, 150, 40);
+        btnEliminar.setBounds(500, 140, 170, 30);
 
         btnModificarContenido.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarContenido.setText("Modificar contenido");
@@ -188,7 +198,7 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarContenido);
-        btnModificarContenido.setBounds(690, 160, 180, 40);
+        btnModificarContenido.setBounds(500, 220, 170, 30);
 
         btnModificarNombre.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModificarNombre.setText("Modificar nombre");
@@ -198,7 +208,6 @@ public class Pantalla extends javax.swing.JFrame {
             }
         });
         jPanel1.add(btnModificarNombre);
-        btnModificarNombre.setBounds(690, 100, 180, 40);
 
         btnModo.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnModo.setText("Modo");
@@ -219,16 +228,87 @@ public class Pantalla extends javax.swing.JFrame {
         });
         jPanel1.add(btnLog);
         btnLog.setBounds(160, 20, 200, 30);
+        btnModificarNombre.setBounds(500, 180, 170, 30);
+
+        btnImportarArchivos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnImportarArchivos.setText("Importar Archivos");
+        btnImportarArchivos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImportarArchivosActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnImportarArchivos);
+        btnImportarArchivos.setBounds(940, 520, 170, 30);
+
+        btnExportarArchivos.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnExportarArchivos.setText("Exportar Archivos");
+        btnExportarArchivos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportarArchivosActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnExportarArchivos);
+        btnExportarArchivos.setBounds(760, 520, 170, 30);
+
+        btnImportarArbol.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnImportarArbol.setText("Importar JTree");
+        btnImportarArbol.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImportarArbolActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnImportarArbol);
+        btnImportarArbol.setBounds(220, 270, 170, 30);
+
+        btnExportarArbol.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnExportarArbol.setText("Exportar JTree");
+        btnExportarArbol.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExportarArbolActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnExportarArbol);
+        btnExportarArbol.setBounds(40, 270, 170, 30);
+
+        tablaAsignacionArchivos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "ID", "Nombre", "N° de Bloques", "Ubicación"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(tablaAsignacionArchivos);
+
+        jPanel1.add(jScrollPane3);
+        jScrollPane3.setBounds(610, 370, 500, 140);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1066, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 1120, Short.MAX_VALUE)
+                .addContainerGap())
         );
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 508, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 586, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -560,6 +640,7 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                                     Archivo archivo = new Archivo(nombre, asignarID(), longitud, celdaDisponible.x, celdaDisponible.y, contenido, color);
                                     listaArchivos.append(archivo);
                                     llenarTablaArchivos();
+                                    actualizarTabla();
                                     
                                     LocalDateTime ahora = LocalDateTime.now();
                                     DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -664,6 +745,7 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                     treeDirectorio.reload(padre); // Recarga el nodo padre para actualizar la vista
                     
                     llenarTablaArchivos();
+                    actualizarTabla();
                 } else {
                     JOptionPane.showMessageDialog(this, "No se puede borrar la raíz del árbol.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -687,7 +769,7 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 }
                 
                 llenarTablaArchivos();
-                
+                actualizarTabla();
             }
         }
         
@@ -723,7 +805,6 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 System.out.println("El archivo \"" + contenidoActual + "\" (ID: " + archivo.getId() + ") " + "ha sido renombrado a \"" + archivo.getNombre() + "\"" );
                 
                 llenarTablaArchivos();
-                
                 LocalDateTime ahora = LocalDateTime.now();
                 DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String fechaHora = ahora.format(formateador);
@@ -731,6 +812,7 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 // Crear registro
                 String registro = "\n   Se renombró el archivo " + contenidoActual + " (ID " + archivo.getId() +  ") a " + archivo.getNombre() + ", Fecha/Hora: " + fechaHora;
                 listaLogOperaciones.add(registro);
+                actualizarTabla();
             }
             
         } else {
@@ -786,7 +868,6 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
 
                 }
                 llenarTablaArchivos();
-                
                 LocalDateTime ahora = LocalDateTime.now();
                 DateTimeFormatter formateador = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String fechaHora = ahora.format(formateador);
@@ -794,7 +875,8 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
                 // Crear registro
                 String registro = "\n   Se modificó el archivo " + archivo.getNombre() + " (ID " + archivo.getId() + "), Fecha/Hora: " + fechaHora;
                 listaLogOperaciones.add(registro);
-                
+
+                actualizarTabla();
             }
         } else {
             JOptionPane.showMessageDialog(this, "Solo puede modificar el contenido de archivos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -865,6 +947,22 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
         logFrame.setVisible(true); // Hace visible el JFrame
         
     }//GEN-LAST:event_btnLogActionPerformed
+
+    private void btnExportarArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarArchivosActionPerformed
+        exportarArchivosJson();
+    }//GEN-LAST:event_btnExportarArchivosActionPerformed
+
+    private void btnImportarArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportarArchivosActionPerformed
+        importarArchivosJson();
+    }//GEN-LAST:event_btnImportarArchivosActionPerformed
+
+    private void btnImportarArbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportarArbolActionPerformed
+        // AQUÍ VA LA LÓGICA DE IMPORTACIÓN DE JTREE
+    }//GEN-LAST:event_btnImportarArbolActionPerformed
+
+    private void btnExportarArbolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportarArbolActionPerformed
+        // AQUÍ VA LA LÓGICA DE EXPORTACIÓN DE JTREE
+    }//GEN-LAST:event_btnExportarArbolActionPerformed
 
     
     private void borrarArchivosDeCarpeta(DefaultMutableTreeNode carpetaNodo) {
@@ -937,8 +1035,68 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
     }
 }
 
+    private void exportarArchivosJson() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        // Convertir la lista de archivos a JSON
+        String json = gson.toJson(listaArchivos);
+        String rutaArchivo = "src/Exportaciones/Lista de Archivos.json";
+
+        try (FileWriter writer = new FileWriter(rutaArchivo)) {
+            writer.write(json);
+            writer.flush();
+            System.out.println("Ruta de exportación: " + rutaArchivo);
+            JOptionPane.showMessageDialog(this,"Archivos exportados exitosamente.");
+        } catch (IOException e) {
+            System.out.println("Ocurrió un error al exportar el archivo: "+e);
+            JOptionPane.showMessageDialog(this, "Hubo un error en la exportación. Intente de nuevo.");
+        }
+    }
     
+    private void importarArchivosJson() {
+        Gson gson = new Gson();
+        String rutaArchivo = "src/Exportaciones/Lista de Archivos.json";
+
+        try (FileReader reader = new FileReader(rutaArchivo)) {
+            java.lang.reflect.Type listaArchivoType = new TypeToken<Lista<Archivo>>() {}.getType();
+            Lista<Archivo> archivosImportados = gson.fromJson(reader, listaArchivoType); //Convierte el JSON en Lista
+            listaArchivos = archivosImportados;
+            System.out.println("Ruta de importación: " + rutaArchivo);
+            JOptionPane.showMessageDialog(this,"Archivos impotados exitosamente.");
+            llenarTablaArchivos();
+            actualizarTabla();
+        } catch (IOException e) {
+            System.out.println("Error al importar el archivo JSON. No se encontró 'Lista de Archivos.json en "+rutaArchivo);
+            JOptionPane.showMessageDialog(this,"Error. Asegúrese de que exista 'Lista de Archivos.json' en la dirección correcta.");
+        }
+    }
     
+    public void actualizarTabla() {
+        System.out.println("Longitud de la lista de archivos: "+listaArchivos.size());
+        DefaultTableModel model = (DefaultTableModel) tablaAsignacionArchivos.getModel();
+        model.setRowCount(0); // Limpiar la tabla existente. Así se evitan duplicados.
+
+        for (int i = 0; i < listaArchivos.size(); i++) {
+            Archivo archivo = listaArchivos.get(i);
+            
+            // Para verificar si el archivo ya está en la tabla de asignación de archivos
+            boolean existe = false;
+            for (int j = 0; j < model.getRowCount(); j++) {
+                String nombreEnTabla = (String) model.getValueAt(j, 1);
+                int idEnTabla = (int) model.getValueAt(j, 0);
+                if (archivo.getNombre().equals(nombreEnTabla) || archivo.getId() == idEnTabla) {
+                    existe = true;
+                    break;
+                }
+            }
+
+            // Si no existe, agrega el archivo a la tabla
+            if (!existe) {
+                String parOrdenado = "("+archivo.getPosicionj()+","+archivo.getPosicioni()+")";
+                model.addRow(new Object[]{archivo.getId(), archivo.getNombre(), archivo.getLongitud(), parOrdenado});
+            }
+        }
+    }
     
     
     /**
@@ -951,6 +1109,10 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
     private javax.swing.JButton btnCrearCarpeta;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnLog;
+    private javax.swing.JButton btnExportarArbol;
+    private javax.swing.JButton btnExportarArchivos;
+    private javax.swing.JButton btnImportarArbol;
+    private javax.swing.JButton btnImportarArchivos;
     private javax.swing.JButton btnModificarContenido;
     private javax.swing.JButton btnModificarNombre;
     private javax.swing.JButton btnModo;
@@ -958,6 +1120,8 @@ public class CeldaColorEspecificoRenderer extends DefaultTableCellRenderer {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTree jTree1;
+    private javax.swing.JTable tablaAsignacionArchivos;
     // End of variables declaration//GEN-END:variables
 }
